@@ -1,0 +1,19 @@
+body {
+    background: url(../img/watch_blue.jpg) no-repeat center fixed;
+    background-size: cover;
+}
+
+.hero {
+    color: #fff;
+    margin-top: 20%;
+    text-align: center;
+    font-size:75px;
+    letter-spacing:-0.05em;
+    line-height:1.2em;
+    font-family: 'Rozha One', serif;
+}
+
+.ima {
+    width: 200px;
+    height: 100px;
+}
