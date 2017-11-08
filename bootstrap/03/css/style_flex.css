@@ -1,0 +1,23 @@
+.con {
+    background-color: #95a5a6;
+    height: 100vh;
+}
+
+.blue {
+    background-color: #3498db;
+    /*height: 200px;*/
+}
+
+.green {
+    background-color: #2ecc71;
+    /*height: 200px;*/
+}
+.red {
+    background-color: red;
+    /*height: 200px;*/
+}
+
+.rowHeight {
+    background-color: #000;
+    height: 200px;
+}
