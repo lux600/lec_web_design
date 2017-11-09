@@ -1,0 +1,15 @@
+body {
+    background: url(../img/coffee.jpg) no-repeat center fixed;
+    background-color: #464646;
+    background-size: cover;
+}
+
+#login-modal .modal-dialog {
+    width: 350px;
+
+}
+
+#login-modal input[type=text],input[type=password]{
+    margin-top: 10px;
+}
+
