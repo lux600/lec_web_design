@@ -967,7 +967,7 @@ document.querySelector('.dice').style.display = 'none' ; //위쪽 주사위 이�
 - 스택 : 메소드 
 - 큐 : 이벤트 메세지         
 
-![](./04/assets/message_queue.png)   
+![](./01/assets/message_queue.png)   
 
 - .bun-roll 클릭하는 것은
     - Mouse 의 click 이벤트 발생  
@@ -977,10 +977,10 @@ document.querySelector('.btn-roll').addEventListener('click', function(){alert('
 ~~~    
 ~~~
 //callback 함수 
-var btn = function(){
+var btn_roll = function(){
     alert('클릭했습니다.') ;
 }
-document.querySelector('.btn-roll').addEventListener('click', btn ); //callback btn()
+document.querySelector('.btn-roll').addEventListener('click', btn_roll ); //callback btn()
  
 ~~~
 
@@ -1000,19 +1000,19 @@ var x = document.querySelector('#score-0').textContent ;
       
 - 주사위 연동하기 
 ~~~
-var btn = function(){
+var btn_roll = function(){
     //alert('클릭했습니다.') ;
     
     //1. 랜덤한 숫자
     dice = Math.floor(Math.random()*6)+1 ;
     console.log("dice="+dice);
 }
-document.querySelector('.btn-roll').addEventListener('click', btn ); //callback btn()
+document.querySelector('.btn-roll').addEventListener('click', btn_roll ); //callback btn()
 ~~~ 
 
 - 주사위 그림 
 ~~~
-var btn = function(){
+var btn_roll = function(){
     //alert('클릭했습니다.') ;
     //1. 랜덤한 숫자
     dice = Math.floor(Math.random()*6)+1 ;
@@ -1034,7 +1034,7 @@ var btn = function(){
 
 - 클릭했을 때 주사위 그림 변화기 
 ~~~
-var btn = function(){
+var btn_roll = function(){
     //alert('클릭했습니다.') ;
     //1. 랜덤한 숫자
     dice = Math.floor(Math.random()*6)+1 ;
@@ -1066,7 +1066,7 @@ document.getElementById('current-1').textContent = '0' ;
 
 - 주사위 숫자가 1이면 다음 플레이어로 넘어간다 
 ~~~
-var btn = function(){
+var btn_roll = function(){
     //alert('클릭했습니다.') ;
     //1. 랜덤한 숫자
     dice = Math.floor(Math.random()*6)+1 ;
@@ -1351,7 +1351,7 @@ function nextPlayer() {
 - btn() 
     - nextPlayer() 함수로 변경하기 
 ~~~
-var btn = function(){
+var btn_roll = function(){
     //alert('클릭했습니다.') ;
     //1. 랜덤한 숫자
     dice = Math.floor(Math.random()*6)+1 ;
@@ -1375,7 +1375,7 @@ var btn = function(){
 
     }
 }
-document.querySelector('.btn-roll').addEventListener('click', btn ); //callback btn()
+document.querySelector('.btn-roll').addEventListener('click', btn_roll ); //callback btn()
 ~~~    
          
 - 100보다 점수가 넘으면 처리
@@ -1585,6 +1585,295 @@ function init() {
 }
 ~~~
 
+- var gamePlaying = true 추가 
+~~~
+function init() {
+    //기존 정보 초기화
+    scores = [0,0] ;
+    roundScore = 0;
+    activePlayer = 0 ;
+    var gamePlaying = true ;
+    
+    ....
+}
+~~~
+
+- gamePlaying 전역변수 선언 
+~~~
+var scores ;  // score-0, score-1
+var roundScore ; // 몇번째 게임인지
+var activePlayer ;  // 실행하는 사람
+var dice ;
+var gamePlaying ; //전역으로 선언 
+~~~
+~~~
+function init() {
+    //기존 정보 초기화
+    scores = [0,0] ;
+    roundScore = 0;
+    activePlayer = 0 ;
+    gamePlaying = true ;
+    
+    ...
+}    
+~~~
+
+- btn_roll 함수에 gamePlaying if문 확인 
+~~~
+var btn_roll = function(){
+    //alert('클릭했습니다.') ;
+    
+    if(gamePlaying){
+        
+    }
+    
+    //1. 랜덤한 숫자
+    dice = Math.floor(Math.random()*6)+1 ;
+    console.log("dice="+dice);
+    
+~~~  
+
+- if(gamePlaying) { 안에 아래 내용을 모두 포함함 
+~~~
+var btn_roll = function(){
+    //alert('클릭했습니다.') ;
+
+    if(gamePlaying){
+
+        //1. 랜덤한 숫자
+        dice = Math.floor(Math.random()*6)+1 ;
+        console.log("dice="+dice);
+
+        //2. 결과를 주사위 그림으로 보여주기
+        //document.querySelector('.dice').style.display = 'block' ;
+        var diceDOM = document.querySelector('.dice');
+        diceDOM.style.display = 'block' ;
+        diceDOM.src = './img/dice-'+ dice +'.png' ;
+
+        // 3. 주사위 숫자가 1인 아니면 계속 주사위를 굴릴 수 있다
+        if(dice !== 1){
+            //add score
+            roundScore += dice ;
+            document.querySelector('#current-'+activePlayer).textContent = roundScore ;
+
+        } else {
+            //next player
+            nextPlayer() ;
+        }
+    }
+
+}
+~~~
+
+- if(scores[activePlayer] >= 20) { 안에
+    - gamePlaying = false 를 추가 
+
+~~~
+var hold_btn = function () {
+    //alert('hold 버튼을 눌렸습니다');
+    //1. current 값을 scores 에 더함
+    scores[activePlayer] += roundScore ;
+
+    //2. 화면 변경
+    document.querySelector('#score-'+activePlayer).textContent = scores[activePlayer] ;
+
+    //3. 100보다 점수가 넘으면
+    if(scores[activePlayer] >= 20) {
+        document.querySelector('#name-'+activePlayer).textContent = 'Winner!' ;
+        document.querySelector('.dice').style.display ='none' ; //주사위 안보이게
+
+        //이겼을 때 클래스 변경
+        document.querySelector('.player-'+activePlayer+'-panel').classList.add('winner');
+        document.querySelector('.player-'+activePlayer+'-panel').classList.remove('active');
+
+        gamePlaying = false ;
+
+    } else {
+        nextPlayer();
+    }
+
+    //4. 다음 플레이어
+    nextPlayer() ;
+
+}
+document.querySelector('.btn-hold').addEventListener('click',hold_btn) ;
+~~~
+
+<br/>
+
+- var hold_btn = function () { 안에 
+    - if(gamePlaying) { 를 추가하고, 기존 코드를 안에 넣음 
+~~~
+var hold_btn = function () {
+    //alert('hold 버튼을 눌렸습니다');
+    if(gamePlaying) {
+        //1. current 값을 scores 에 더함
+        scores[activePlayer] += roundScore ;
+    
+        //2. 화면 변경
+        document.querySelector('#score-'+activePlayer).textContent = scores[activePlayer] ;
+    
+        //3. 100보다 점수가 넘으면
+        if(scores[activePlayer] >= 20) {
+            document.querySelector('#name-'+activePlayer).textContent = 'Winner!' ;
+            document.querySelector('.dice').style.display ='none' ; //주사위 안보이게
+    
+            //이겼을 때 클래스 변경
+            document.querySelector('.player-'+activePlayer+'-panel').classList.add('winner');
+            document.querySelector('.player-'+activePlayer+'-panel').classList.remove('active');
+    
+            gamePlaying = false ;
+    
+        } else {
+            nextPlayer();
+        }
+    
+        //4. 다음 플레이어
+        nextPlayer() ;
+    }
+}
+document.querySelector('.btn-hold').addEventListener('click',hold_btn) ;
+~~~
+
+<br/>
+
+---
+
+### final score
+- //2. 화면 변경
+    - document.querySelector('#score-'+activePlayer).textContent = scores[activePlayer] ;
+    - 위의 아래에 아래 코드 추가 
+- 결과는 input 에 아무것도 없기 때문에 hold버튼에 console에는 결과가 나오지 않는다 
+    - 임의의 값을 입력하고, hold 를 누르면 console에 값이 나온다 
+~~~
+var input = document.querySelector('.final-score').value ;
+console.log(input); 
+~~~
+~~~
+var hold_btn = function () {
+    //alert('hold 버튼을 눌렸습니다');
+    if(gamePlaying) {
+        //1. current 값을 scores 에 더함
+        scores[activePlayer] += roundScore ;
+
+        //2. 화면 변경
+        document.querySelector('#score-'+activePlayer).textContent = scores[activePlayer] ;
+
+        var input = document.querySelector('.final-score').value ;
+        console.log(input); 
+
+        //3. 100보다 점수가 넘으면
+        if(scores[activePlayer] >= 20) {
+            document.querySelector('#name-'+activePlayer).textContent = 'Winner!' ;
+            document.querySelector('.dice').style.display ='none' ; //주사위 안보이게
+
+            //이겼을 때 클래스 변경
+            document.querySelector('.player-'+activePlayer+'-panel').classList.add('winner');
+            document.querySelector('.player-'+activePlayer+'-panel').classList.remove('active');
+
+            gamePlaying = false ;
+
+        } else {
+            nextPlayer();
+        }
+
+        //4. 다음 플레이어
+        nextPlayer() ;
+    }
+}
+document.querySelector('.btn-hold').addEventListener('click',hold_btn) ;
+~~~ 
+
+- if(input){ 추가         
+~~~
+if(input){
+    
+}
+~~~
+~~~
+var hold_btn = function () {
+    //alert('hold 버튼을 눌렸습니다');
+    if(gamePlaying) {
+        //1. current 값을 scores 에 더함
+        scores[activePlayer] += roundScore ;
+
+        //2. 화면 변경
+        document.querySelector('#score-'+activePlayer).textContent = scores[activePlayer] ;
+
+        var input = document.querySelector('.final-score').value ;
+        //console.log(input);
+
+        //Undefined, 0, null 은 false
+        if(input){
+
+        }
+
+        //3. 100보다 점수가 넘으면
+        if(scores[activePlayer] >= 20) {
+            document.querySelector('#name-'+activePlayer).textContent = 'Winner!' ;
+            document.querySelector('.dice').style.display ='none' ; //주사위 안보이게
+~~~
+
+<br/>
+
+- input 승리하는 값을 정하지 않을 때는, 100으로 
+~~~
+var winningScore ;
+if(input){
+    winningScore = input ;
+} else {
+    winningScore = 100 ;
+}
+
+//3. 100보다 점수가 넘으면
+if(scores[activePlayer] >= winningScore) {
+....
+~~~ 
+
+~~~
+var hold_btn = function () {
+    //alert('hold 버튼을 눌렸습니다');
+    if(gamePlaying) {
+        //1. current 값을 scores 에 더함
+        scores[activePlayer] += roundScore ;
+
+        //2. 화면 변경
+        document.querySelector('#score-'+activePlayer).textContent = scores[activePlayer] ;
+
+        var input = document.querySelector('.final-score').value ;
+        //console.log(input);
+
+        //Undefined, 0, null 은 false
+        var winningScore ;
+        if(input){
+            winningScore = input ;
+        } else {
+            winningScore = 100 ;
+        }
+
+        //3. 100보다 점수가 넘으면
+        if(scores[activePlayer] >= 20) {
+            document.querySelector('#name-'+activePlayer).textContent = 'Winner!' ;
+            document.querySelector('.dice').style.display ='none' ; //주사위 안보이게
+
+            //이겼을 때 클래스 변경
+            document.querySelector('.player-'+activePlayer+'-panel').classList.add('winner');
+            document.querySelector('.player-'+activePlayer+'-panel').classList.remove('active');
+
+            gamePlaying = false ;
+
+        } else {
+            nextPlayer();
+        }
+
+        //4. 다음 플레이어
+        nextPlayer() ;
+    }
+}
+document.querySelector('.btn-hold').addEventListener('click',hold_btn) ;
+~~~           
+
+  
 
  
 

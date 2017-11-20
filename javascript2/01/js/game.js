@@ -2,6 +2,7 @@ var scores ;  // score-0, score-1
 var roundScore ; // 몇번째 게임인지
 var activePlayer ;  // 실행하는 사람
 var dice ;
+var gamePlaying ;
 
 scores = [ 0,0 ] ;
 roundScore = 0 ;
@@ -23,6 +24,7 @@ function init() {
     scores = [0,0] ;
     roundScore = 0;
     activePlayer = 0 ;
+    gamePlaying = true ;
 
     document.querySelector('.dice').style.display = 'none' ; //위쪽 주사위 이미지 안보이게
 
@@ -44,56 +46,74 @@ function init() {
 
 init() ;
 
-var btn = function(){
+var btn_roll = function(){
     //alert('클릭했습니다.') ;
-    //1. 랜덤한 숫자
-    dice = Math.floor(Math.random()*6)+1 ;
-    console.log("dice="+dice);
 
-    //2. 결과를 주사위 그림으로 보여주기
-    //document.querySelector('.dice').style.display = 'block' ;
-    var diceDOM = document.querySelector('.dice');
-    diceDOM.style.display = 'block' ;
-    diceDOM.src = './img/dice-'+ dice +'.png' ;
+    if(gamePlaying){
 
-    // 3. 주사위 숫자가 1인 아니면 계속 주사위를 굴릴 수 있다
-    if(dice !== 1){
-        //add score
-        roundScore += dice ;
-        document.querySelector('#current-'+activePlayer).textContent = roundScore ;
+        //1. 랜덤한 숫자
+        dice = Math.floor(Math.random()*6)+1 ;
+        console.log("dice="+dice);
 
-    } else {
-        //next player
-        nextPlayer() ;
+        //2. 결과를 주사위 그림으로 보여주기
+        //document.querySelector('.dice').style.display = 'block' ;
+        var diceDOM = document.querySelector('.dice');
+        diceDOM.style.display = 'block' ;
+        diceDOM.src = './img/dice-'+ dice +'.png' ;
 
+        // 3. 주사위 숫자가 1인 아니면 계속 주사위를 굴릴 수 있다
+        if(dice !== 1){
+            //add score
+            roundScore += dice ;
+            document.querySelector('#current-'+activePlayer).textContent = roundScore ;
+
+        } else {
+            //next player
+            nextPlayer() ;
+        }
     }
+
 }
-document.querySelector('.btn-roll').addEventListener('click', btn ); //callback btn()
+document.querySelector('.btn-roll').addEventListener('click', btn_roll ); //callback btn()
 
 var hold_btn = function () {
     //alert('hold 버튼을 눌렸습니다');
-    //1. current 값을 scores 에 더함
-    scores[activePlayer] += roundScore ;
+    if(gamePlaying) {
+        //1. current 값을 scores 에 더함
+        scores[activePlayer] += roundScore ;
 
-    //2. 화면 변경
-    document.querySelector('#score-'+activePlayer).textContent = scores[activePlayer] ;
+        //2. 화면 변경
+        document.querySelector('#score-'+activePlayer).textContent = scores[activePlayer] ;
 
-    //3. 100보다 점수가 넘으면
-    if(scores[activePlayer] >= 20) {
-        document.querySelector('#name-'+activePlayer).textContent = 'Winner!' ;
-        document.querySelector('.dice').style.display ='none' ; //주사위 안보이게
+        var input = document.querySelector('.final-score').value ;
+        //console.log(input);
 
-        //이겼을 때 클래스 변경
-        document.querySelector('.player-'+activePlayer+'-panel').classList.add('winner');
-        document.querySelector('.player-'+activePlayer+'-panel').classList.remove('active');
+        //Undefined, 0, null 은 false
+        var winningScore ;
+        if(input){
+            winningScore = input ;
+        } else {
+            winningScore = 100 ;
+        }
 
-    } else {
-        nextPlayer();
+        //3. 100보다 점수가 넘으면
+        if(scores[activePlayer] >= winningScore) {
+            document.querySelector('#name-'+activePlayer).textContent = 'Winner!' ;
+            document.querySelector('.dice').style.display ='none' ; //주사위 안보이게
+
+            //이겼을 때 클래스 변경
+            document.querySelector('.player-'+activePlayer+'-panel').classList.add('winner');
+            document.querySelector('.player-'+activePlayer+'-panel').classList.remove('active');
+
+            gamePlaying = false ;
+
+        } else {
+            nextPlayer();
+        }
+
+        //4. 다음 플레이어
+        nextPlayer() ;
     }
-
-    //4. 다음 플레이어
-    nextPlayer() ;
-
 }
 document.querySelector('.btn-hold').addEventListener('click',hold_btn) ;
 
