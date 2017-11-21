@@ -4,25 +4,26 @@
     <meta charset="UTF-8">
     <title>Form</title>
     <link rel="stylesheet" type="text/css" href="./css/form.css">
-    <script type="text/javascript" src="./js/form.js"></script>
 </head>
 <body onload="ready()">
 <div>
-    <form method="POST" action="javascript:check()" name="frm">
+    <form method="POST" name="frm" action="server_send.py" onsubmit="return check()">
         <div class="div_height">
             가입신청서에 *란은 필수 입니다
         </div>
         <div class="div_height">
-            <input type="text"  name="name" placeholder="name">*
+            <input type="text"  name="name" id="name" placeholder="name">*
+            <p id="name_error" class="p_error"></p>
         </div>
         <div class="div_height">
-            <input type="text"  name="id" placeholder="ID">*
+            <input type="text"  name="id" id="id" placeholder="ID">*
+            <p id="id_error" class="p_error"></p>
         </div>
         <div class="div_height">
-            <input type="password" name="password1" placeholder="비밀번호1">*
+            <input type="password" name="password1" id="password1" placeholder="비밀번호1">*
         </div>
         <div class="div_height">
-            <input type="password" name="password2" placeholder="비밀번호2">*
+            <input type="password" name="password2" id="password2" placeholder="비밀번호2">*
         </div>
         <div class="div_height">
             <select name="job">
@@ -52,5 +53,7 @@
         </div>
     </form>
 </div>
+
+<script type="text/javascript" src="./js/form.js"></script>
 </body>
 </html>
